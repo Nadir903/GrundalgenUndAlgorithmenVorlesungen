@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../FirstProgram/FirstProgram.iml" filepath="$PROJECT_DIR$/../FirstProgram/FirstProgram.iml" />
       <module fileurl="file://$PROJECT_DIR$/GrundalgenUndAlgorithmenVorlesungen.iml" filepath="$PROJECT_DIR$/GrundalgenUndAlgorithmenVorlesungen.iml" />
     </modules>
   </component>
