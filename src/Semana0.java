@@ -1,17 +1,14 @@
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
 //Semana 0 → Preparación para el semestre
 //----------------------------------------------------------------------------------------------------------------------
-class SuchAlgorithmen <E>{
+class SearchAlgorithm <E>{
     //K(String) ist the Key and E is the Element
     private final HashMap<String,E> map;
-    public SuchAlgorithmen(){
+    public SearchAlgorithm(){
         this.map = new HashMap<>();
     }
-    public SuchAlgorithmen(HashMap<String,E> map){
+    public SearchAlgorithm(HashMap<String,E> map){
         this.map = map;
     }
     //..................................Sequenzielle Suche: linear und einfach..........................................
@@ -163,6 +160,83 @@ class SortAlgorithmen {
         return i + 1;
     }
 }
+//----------------------------------------TopSort: lets see what's coming next------------------------------------------
+//-------Topological Sort sortiert eine Liste von Knoten, indem er die Ordnung dieser Kannten analysiert und die--------
+//-------entsprechend ihrer Grösse aufsteigend sortiert.----------------------------------------------------------------
+class TopologicalSort{
+    private int numberOfVertices;
+    private LinkedList<Integer>[] adjacencyList;
+    public TopologicalSort(int numberOfVertices){
+        this.numberOfVertices = numberOfVertices;
+        adjacencyList = new LinkedList[numberOfVertices];
+        for (int i = 0; i < numberOfVertices; i++) {
+            adjacencyList[i] = new LinkedList<>();
+        }
+    }
+    public void addEdge(int origin, int destiny){
+        adjacencyList[origin].add(destiny);
+    }
+    public void topSortIntern(int vertices, boolean[] visited , Stack<Integer> stack){
+        visited[vertices] = true;
+        for (Integer integer : adjacencyList[vertices]) {
+            if (!visited[integer]) {
+                topSortIntern(integer, visited, stack);
+            }
+        }
+        stack.push(vertices);
+    }
+    public void topologicalSort(){
+        Stack<Integer> stack = new Stack<>();
+        boolean[] visited = new boolean[numberOfVertices];
+        for (int i = 0; i < numberOfVertices; i++) {
+            if(!visited[i]){
+                topSortIntern(i,visited,stack);
+            }
+        }
+        while (!stack.empty()){
+            System.out.println(stack.pop() + "");
+        }
+    }
+    public static void main(String[] args) {
+        TopologicalSort g = new TopologicalSort(6);
+        g.addEdge(5, 2);
+        g.addEdge(5, 0);
+        g.addEdge(4, 0);
+        g.addEdge(4, 1);
+        g.addEdge(2, 3);
+        g.addEdge(3, 1);
+
+        System.out.println("Following is a Topological " +
+                "sort of the given graph");
+        g.topologicalSort();
+    }
+}
+//----------------------------------------------------------------------------------------------------------------------
+class SearchAlgorithmForText{
+    public static void isInTextEinfach(String text, String word){
+        boolean somethingFound = false;
+        for (int pos = 0; pos <= text.length() - word.length(); pos++) {
+            for (int j = word.length() - 1 ; j >= 0 && word.charAt(j) == text.charAt(pos + j); j--) {
+                if (j == 0){
+                    System.out.println("Word is in Position: " + pos);
+                    somethingFound = true;
+                }
+            }
+        }
+        if(!somethingFound){
+            throw new NoSuchElementException("Word is not in Text");
+        }
+    }
+    public static void isInText(String text,String word){
+
+    }
+    public static void main(String[] args) {
+        String text = "Such die Nadel im heu.";
+        String query = "die";
+        isInTextEinfach(text,query);
+    }
+}
+//----------------------------------------------------------------------------------------------------------------------
 class Generator{
     public static int[] genIntArray(int size){
         int[] array = new int[size];
@@ -172,10 +246,93 @@ class Generator{
         return array;
     }
 }
-
+//----------------------------------------------------------------------------------------------------------------------
 class PlayGround{
     public static void main(String[] args) {
-        int[] si = Generator.genIntArray(100);
-        System.out.println(Arrays.toString(SortAlgorithmen.quickSort(si)));
+
     }
 }
+/*
+private Stack<Node<T>> sortedStack;
+    static class Node<T>{
+        private final T data;
+        boolean visited;
+        List<Node<T>> neighbours;
+        public Node(T data){
+            this.data = data;
+            neighbours = new ArrayList<>();
+            visited = false;
+        }
+
+        public List<Node<T>> getNeighbours() {
+            return neighbours;
+        }
+
+        public T getData() {
+            return data;
+        }
+
+        public void addNeighbours(Node<T> neighbour){
+            if(Objects.equals(neighbour,null)){
+                throw new NoSuchElementException("neighbour should exist");
+            }
+            if(neighbour.getData().equals(data)){
+                return;
+            }
+            this.neighbours.add(neighbour);
+        }
+
+        public void setNeighbours(List<Node<T>> neighbours) {
+            this.neighbours = neighbours;
+        }
+        public String showNeighbourHood(){
+            StringBuilder group = new StringBuilder("( " + data + " ) -> { ");
+            for (Node<T> e: neighbours) {
+                group.append(e.toString()).append(", ");
+            }
+            group.append(" }");
+            return group.toString();
+
+        }
+        public String toString(){
+            return "" + data;
+        }
+    }
+    public TopologicalSort(){
+        this.sortedStack = new Stack<>();
+    }
+    public void topologicalSort(Node<T> node){
+        List<Node<T>> neighbours = node.getNeighbours();
+        for (Node<T> n : neighbours) {
+            if (!n.visited) {
+                topologicalSort(n);
+                n.visited = true;
+            }
+        }
+        sortedStack.push(node);
+    }
+
+    public Stack<Node<T>> getSortedStack() {
+        return sortedStack;
+    }
+
+    public static void main(String[] args) {
+        TopologicalSort<Integer> topSort = new TopologicalSort<>();
+        Node<Integer> n1 = new Node<>(1);
+        Node<Integer> n2 = new Node<>(2);
+        Node<Integer> n3 = new Node<>(3);
+        Node<Integer> n4 = new Node<>(4);
+        Node<Integer> n5 = new Node<>(5);
+        //we add neighbours
+        n1.addNeighbours(n4);
+        n1.addNeighbours(n5);
+        n3.addNeighbours(n2);
+        n4.addNeighbours(n2);
+        n5.addNeighbours(n4);
+        topSort.topologicalSort(n1);
+        Stack<Node<Integer>> sortedStack = topSort.getSortedStack();
+        while (!sortedStack.empty()){
+            System.out.println(sortedStack.pop()+"");
+        }
+    }
+ */
